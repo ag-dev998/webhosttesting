@@ -1,14 +1,12 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "out",
     "cleanUrls": true,
     "trailingSlash": false,
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      "README.md",
-      "PLACEHOLDERS.md"
+      "**/node_modules/**"
     ],
     "headers": [
       {

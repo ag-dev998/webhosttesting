@@ -1,32 +1,35 @@
 # [BUSINESS NAME] website (MVP)
 
-A plain HTML/CSS static site. It has no build step and no dependencies. Open `index.html` in a browser to view it, or deploy the folder to Firebase Hosting as is.
+A [Next.js](https://nextjs.org) (App Router, TypeScript, Tailwind CSS) site, exported as static HTML and hosted on Firebase Hosting.
 
-## Pages
+## Folder layout
 
-| File | Page |
+| Path | What it is |
 |---|---|
-| `index.html` | Home / landing page: the pitch. Holds no prices. |
-| `packages.html` | Website build packages (Launch, Growth, Custom), what's included, build FAQ |
-| `care-plans.html` | Monthly care plans, comparison table, add-ons, care plan FAQ |
-| `work.html` | Portfolio projects and testimonials |
-| `about.html` | About you |
-| `contact.html` | Contact form + other contact options |
-| `thank-you.html` | Shown after the form sends |
-| `privacy.html` | Privacy policy (draft) |
-| `404.html` | "Page not found" (Firebase serves it automatically) |
-| `services.html` | Old page. Only forwards to `packages.html`, so you can delete it. |
+| `app/` | Pages and layout. Each route is a folder with a `page.tsx` (e.g. `app/packages/page.tsx` → `/packages`). |
+| `app/globals.css` | Global styles and Tailwind setup. |
+| `app/icon.svg` | Favicon. |
+| `public/` | Files served as-is at the site root: `robots.txt`, `sitemap.xml`, images. |
+| `legacy/` | The original plain-HTML site (pages, `assets/css/styles.css`, `assets/js/main.js`). Kept only as the source to port into `app/`. Not built or deployed. Delete it once every page is ported. |
+| `next.config.ts` | Next.js config (`output: "export"` builds static files into `out/`). |
+| `firebase.json` / `.firebaserc` | Firebase Hosting config. Serves `out/`. |
 
-Shared files:
-- `assets/css/styles.css`: all styling. Brand colors are at the top.
-- `assets/js/main.js`: mobile menu and the contact form. Form settings are at the top.
+### Porting the legacy pages
 
-### Where to change things
+| Legacy file | Next.js route |
+|---|---|
+| `legacy/index.html` | `app/page.tsx` |
+| `legacy/packages.html` | `app/packages/page.tsx` |
+| `legacy/care-plans.html` | `app/care-plans/page.tsx` |
+| `legacy/work.html` | `app/work/page.tsx` |
+| `legacy/about.html` | `app/about/page.tsx` |
+| `legacy/contact.html` | `app/contact/page.tsx` |
+| `legacy/thank-you.html` | `app/thank-you/page.tsx` |
+| `legacy/privacy.html` | `app/privacy/page.tsx` |
+| `legacy/404.html` | `app/not-found.tsx` |
+| `legacy/services.html` | Not needed: `firebase.json` already redirects `/services` → `/packages`. |
 
-- **Prices** live in exactly one place: build prices on `packages.html`, monthly prices on `care-plans.html`.
-- Each main page is split into blocks marked `<!-- ===== SECTION: Name ===== -->`. Search for `SECTION:` to jump between them.
-- On `work.html`, add a project by copying a `<!-- PROJECT -->` block.
-- **Header and footer** are copied into every page. To change the nav or footer, use Find/Replace across the folder (`Ctrl+Shift+H` in VS Code).
+The shared header/footer from each legacy page belongs in `app/layout.tsx` (write it once instead of copying it into every page). The mobile menu and contact form logic in `legacy/assets/js/main.js` become client components.
 
 ## Filling in placeholders
 
@@ -34,7 +37,7 @@ See **[PLACEHOLDERS.md](PLACEHOLDERS.md)**. Everything you still need to fill in
 
 ## Contact form → n8n
 
-The form sends a JSON `POST` to `FORM_ENDPOINT` in `assets/js/main.js`:
+The form sends a JSON `POST` to `FORM_ENDPOINT` (currently in `legacy/assets/js/main.js`; move it into the contact form component when you port it):
 
 ```json
 {
@@ -52,12 +55,12 @@ Also in n8n, allow CORS on the webhook for your domain (Webhook node → Options
 
 Spam protection: a hidden honeypot field plus a 3-second minimum fill time. Add Cloudflare Turnstile later if spam gets through.
 
-## Preview locally
-
-Double-click `index.html`, or for clean URLs run a local server from this folder:
+## Develop locally
 
 ```bash
-npx serve .          # or: python -m http.server 8080
+npm install     # first time only
+npm run dev     # http://localhost:3000, auto-reloads on save
+npm run lint
 ```
 
 ## Deploy to Firebase Hosting
@@ -66,11 +69,12 @@ npx serve .          # or: python -m http.server 8080
 npm install -g firebase-tools
 firebase login
 # put your project ID in .firebaserc (replace [FIREBASE-PROJECT-ID])
+npm run build                             # writes the static site to out/
 firebase hosting:channel:deploy preview   # private preview link
 firebase deploy --only hosting            # go live
 ```
 
-`firebase.json` turns on clean URLs (`/packages` instead of `/packages.html`), redirects the old `/services` link to `/packages`, and keeps README/PLACEHOLDERS out of the deploy.
+`firebase.json` serves the `out/` folder, turns on clean URLs (`/packages` instead of `/packages.html`), and redirects the old `/services` link to `/packages`. Always run `npm run build` before deploying, or Firebase uploads a stale (or missing) `out/`.
 
 ## Before launch
 - [ ] All placeholders replaced (search for `\[[A-Z]` with regex on)

@@ -4,6 +4,8 @@ Everything you still need to fill in is in **[SQUARE BRACKETS]**. Use VS Code's 
 
 To find anything left, search for `\[[A-Z]` with regex turned on (the `.*` button).
 
+> The page files named below (`index.html`, `assets/...`) now live in `legacy/` while they are ported to Next.js. See the porting table in [README.md](README.md). Site-wide files moved: `robots.txt` and `sitemap.xml` are in `public/`, and the favicon is `app/icon.svg`.
+
 ## Site-wide (header, footer, every page)
 
 | Placeholder | What to put | Example |
