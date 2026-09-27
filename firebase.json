@@ -1,0 +1,37 @@
+{
+  "hosting": {
+    "public": ".",
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "README.md",
+      "PLACEHOLDERS.md"
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(css|js|svg|png|jpg|jpeg|webp|ico)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=3600"
+          }
+        ]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/services",
+        "destination": "/packages",
+        "type": 301
+      },
+      {
+        "source": "/services.html",
+        "destination": "/packages",
+        "type": 301
+      }
+    ]
+  }
+}
